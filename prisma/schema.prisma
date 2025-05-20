@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model loja {
+  cnpj               String             @id
+  nome               String
+  descricao          String?
+  telefone           String?
+  email              String?
+  frete              Float?
+  cep                String?
+  rua                String?
+  numero             Int?
+  senha              String
+  horarioAtendimento String?
+  diasAtendimento    String?
+  abreFeriados       Boolean            @default(false)
+  categorias         categoriaLoja[]
+  categoriasProduto  categoriaProduto[]
+  produtos           produto[]
+
+  pedido pedido[]
+}
+
+model categoriaLoja {
+  id    Int    @id @default(autoincrement())
+  nome  String @unique
+  lojas loja[]
+}
+
+model categoriaProduto {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  loja     loja      @relation(fields: [lojaCnpj], references: [cnpj])
+  lojaCnpj String
+  produtos produto[]
+}
+
+model produto {
+  id                 Int              @id @default(autoincrement())
+  nome               String
+  descricao          String?
+  preco              Float?
+  loja               loja             @relation(fields: [lojaCnpj], references: [cnpj])
+  lojaCnpj           String
+  categoriaProduto   categoriaProduto @relation(fields: [categoriaProdutoId], references: [id])
+  categoriaProdutoId Int
+
+  pedidoProduto pedidoProduto[]
+}
+
+enum tipoUsuario {
+  ADMIN
+  USER
+}
+
+model usuario {
+  id    Int         @id @default(autoincrement())
+  nome  String
+  email String      @unique
+  senha String
+  tipo  tipoUsuario @default(USER)
+
+  pedido pedido[]
+}
+
+model pedido {
+  id        Int             @id @default(autoincrement())
+  usuario   usuario         @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  loja      loja            @relation(fields: [lojaCnpj], references: [cnpj])
+  lojaCnpj  String
+  produtos  pedidoProduto[]
+  total     Float
+  criadoEm  DateTime        @default(now())
+}
+
+model pedidoProduto {
+  id         Int @id @default(autoincrement())
+  pedidoId   Int
+  produtoId  Int
+  quantidade Int
+
+  pedido  pedido  @relation(fields: [pedidoId], references: [id])
+  produto produto @relation(fields: [produtoId], references: [id])
+}
