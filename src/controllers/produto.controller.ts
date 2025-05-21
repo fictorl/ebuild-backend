@@ -48,7 +48,6 @@ export const deleteProduto = async (req: Request, res: Response) => {
 
 export async function listProdutosByLojistaController(req: Request, res: Response) {
   try {
-    // Supondo que o middleware de autenticação adiciona lojaCnpj ao req
     const lojaCnpj = (req as any).lojaCnpj;
     if (!lojaCnpj) return res.status(401).json({ error: 'Unauthorized' });
 
