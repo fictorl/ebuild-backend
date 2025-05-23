@@ -19,8 +19,13 @@ export async function createProdutoService({
     where: { id: categoriaProdutoId }
   });
 
-  if (!categoria) throw new Error('This category does not exist');
-  if (categoria.lojaCnpj !== lojaCnpj) throw new Error('This category does not belong to this store');
+  if (!categoria) {
+    throw new Error('Categoria não existe');
+  }
+
+  //if (categoria.lojaCnpj !== lojaCnpj) {
+    //throw new Error('Categoria não pertence a esta loja');
+  //}
 
   return prisma.produto.create({
     data: {

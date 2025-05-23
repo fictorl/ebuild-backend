@@ -12,10 +12,24 @@ export const createProduto = async (req: Request, res: Response) => {
   const { nome, descricao, preco, categoriaProdutoId } = req.body;
 
   try {
-    const produto = await createProdutoService({ nome, descricao, preco, lojaCnpj, categoriaProdutoId });
-    res.status(201).json(produto);
+    const produto = await createProdutoService({
+      nome,
+      descricao,
+      preco,
+      lojaCnpj,
+      categoriaProdutoId
+    });
+    return res.status(201).json(produto);
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    console.error('Erro em createProduto:', {
+      lojaCnpj,
+      nome,
+      descricao,
+      preco,
+      categoriaProdutoId,
+      mensagem: error.message
+    });
+    return res.status(400).json({ mensagem: error.message });
   }
 };
 
