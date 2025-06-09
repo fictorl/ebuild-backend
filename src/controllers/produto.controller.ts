@@ -5,6 +5,7 @@ import {
   getProdutoService,
   deleteProdutoService,
   listProdutosByLojistaService,
+  updateProdutoService,
 } from '../services/produto.service';
 
 export const createProduto = async (req: Request, res: Response) => {
@@ -21,14 +22,6 @@ export const createProduto = async (req: Request, res: Response) => {
     });
     return res.status(201).json(produto);
   } catch (error: any) {
-    console.error('Erro em createProduto:', {
-      lojaCnpj,
-      nome,
-      descricao,
-      preco,
-      categoriaProdutoId,
-      mensagem: error.message
-    });
     return res.status(400).json({ mensagem: error.message });
   }
 };
@@ -71,3 +64,20 @@ export async function listProdutosByLojistaController(req: Request, res: Respons
     res.status(500).json({ error: 'Erro ao listar produtos da loja' });
   }
 }
+
+export const updateProduto = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const lojaCnpj = (req as any).user.cnpj; 
+  const { nome, descricao, preco, categoriaProdutoId } = req.body;
+
+  try {
+    const produto = await updateProdutoService(
+      id,
+      { nome, descricao, preco, categoriaProdutoId },
+      lojaCnpj
+    );
+    res.json(produto);
+  } catch (error: any) {
+    res.status(400).json({ mensagem: error.message });
+  }
+};

@@ -60,3 +60,39 @@ export async function listProdutosByLojistaService(lojaCnpj: string) {
     include: { loja: true, categoriaProduto: true }
   });
 }
+
+export async function updateProdutoService(
+  id: number,
+  data: {
+    nome?: string;
+    descricao?: string;
+    preco?: number;
+    categoriaProdutoId?: number;
+  },
+  lojaCnpj: string
+) {
+  const produto = await prisma.produto.findUnique({ where: { id } });
+
+  if (!produto) {
+    throw new Error('Produto não encontrado');
+  }
+
+  if (produto.lojaCnpj !== lojaCnpj) {
+    throw new Error('Você não tem permissão para editar este produto');
+  }
+
+  if (data.categoriaProdutoId) {
+    const categoria = await prisma.categoriaProduto.findUnique({
+      where: { id: data.categoriaProdutoId },
+    });
+
+    if (!categoria) {
+      throw new Error('Categoria não existe');
+    }
+  }
+
+  return prisma.produto.update({
+    where: { id },
+    data,
+  });
+}
